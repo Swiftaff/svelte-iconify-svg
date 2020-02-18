@@ -1,6 +1,6 @@
 {
   "name": "svelte-iconify-svg",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A node script to autogenerate svg markup from iconify references in your svelte project",
   "main": "index.js",
   "scripts": {
