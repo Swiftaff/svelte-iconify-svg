@@ -7,6 +7,7 @@ const { Collection } = require("@iconify/json-tools");
 const helpText = `
 1. syntax: svelte-iconify-svg -i inputDirectoryArray -o outputFilePath
 If you don't supply the optional i or o parameters it uses these defaults...
+*FULL PATHS ONLY AT THE MOMENT*
 inputDirectoryArray = "src"
 outputFilePath = "src/icons.js"
     
@@ -33,6 +34,7 @@ import { icons } from "./icons.js";
 {@html icons["fa:random"]}
 <!-- note, so if this example.svelte file is in one of the input directories, the "fa:random" text above would have been found, and the icon auto-generated! -->
 `;
+//module.exports = function() {
 const argv = yargs
     .option("input", {
         alias: "i",
@@ -52,12 +54,12 @@ let inputDirectoryArray = argv.input || ["src"];
 let outputFilePath = argv.output || "src/icons.js";
 
 let thePath = process.argv[1];
+console.log(thePath);
 
-saveIconifySVGs(inputDirectoryArray, outputFilePath);
+main(inputDirectoryArray, outputFilePath);
+//};
 
-module.exports = saveIconifySVGs;
-
-function saveIconifySVGs(inputDirectoryArray, outputFilePath) {
+function main(inputDirectoryArray, outputFilePath) {
     let dirFilesObjArr = getFilesInDirectory(inputDirectoryArray);
     let text = getContentsOfAllFiles(dirFilesObjArr, outputFilePath);
     let iconsList = getIconNamesFromTextUsingRegex(text);
@@ -71,9 +73,9 @@ function saveIconifySVGs(inputDirectoryArray, outputFilePath) {
 function getFilesInDirectory(dirsArr) {
     let ret = [];
     dirsArr.forEach(dir => {
-        const directoryPath = path.join(__dirname, dir);
+        //const directoryPath = path.join(__dirname, dir);
         try {
-            ret.push({ dir, files: fs.readdirSync(directoryPath, "utf8") });
+            ret.push({ dir, files: fs.readdirSync(dir, "utf8") });
         } catch (err) {
             console.log(err);
         }
@@ -85,14 +87,14 @@ function getFilesInDirectory(dirsArr) {
 function getContentsOfAllFiles(dirFilesObjArr, output) {
     let html = "";
     dirFilesObjArr.forEach(dirFilesObj => {
-        const directoryPath = path.join(__dirname, dirFilesObj.dir);
+        //const directoryPath = path.join(__dirname, dirFilesObj.dir);
         dirFilesObj.files.map(fileName => {
             if (
                 (fileName.endsWith(".svelte") || fileName.endsWith(".js")) &&
-                directoryPath + "/" + fileName !== output
+                dirFilesObj.dir + "/" + fileName !== output
             ) {
                 try {
-                    const data = fs.readFileSync(directoryPath + "/" + fileName, "utf8");
+                    const data = fs.readFileSync(dirFilesObj.dir + "/" + fileName, "utf8");
                     html += data;
                 } catch (err) {
                     console.error(err);

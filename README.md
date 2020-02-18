@@ -32,6 +32,8 @@ Add to your package.json, and run it as part of your dev or build step
 
 ### Options
 
+Please note: Defaults not working, and please use full paths only at the moment
+
 -   -i or --input [default = "src"]
     provide a space separated list of strings for all folder paths you wish to search
 
