@@ -1,0 +1,24 @@
+{
+  "name": "svelte-iconify-svg",
+  "version": "1.0.0",
+  "description": "A node script to autogenerate svg markup from iconify references in your svelte project",
+  "main": "index.js",
+  "scripts": {
+    "svelteiconifysvg": "node svelte-iconify-svg",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Swiftaff/svelte-iconify-svg.git"
+  },
+  "author": "Swiftaff",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Swiftaff/svelte-iconify-svg/issues"
+  },
+  "homepage": "https://github.com/Swiftaff/svelte-iconify-svg#readme",
+  "devDependencies": {
+    "@iconify/json-tools": "^1.0.6",
+    "yargs": "^15.1.0"
+  }
+}
