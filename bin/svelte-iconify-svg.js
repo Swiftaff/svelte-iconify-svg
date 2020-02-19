@@ -1,4 +1,4 @@
-#!/usr/local/bin/node
+#!/usr/bin/env node
 
 const svelteiconifysvg = require("../index.js");
 const yargs = require("yargs");
