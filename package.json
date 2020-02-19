@@ -1,10 +1,10 @@
 {
   "name": "svelte-iconify-svg",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A node script to autogenerate svg markup from iconify references in your svelte project",
   "main": "index.js",
   "bin": {
-    "svelte-iconify-svg": ".bin/svelte-iconify-svg.js"
+    "svelte-iconify-svg": "./bin/svelte-iconify-svg.js"
   },
   "scripts": {
     "test": "node index -i 'test' -o 'test/icons.js'"
