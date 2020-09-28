@@ -1,6 +1,7 @@
 # Svelte Iconify SVG (Markup Exporter)
 
 [![github-package.json-version](https://img.shields.io/github/package-json/v/Swiftaff/svelte-iconify-svg?style=social&logo=github)](https://github.com/Swiftaff/svelte-iconify-svg) [![The MIT License](https://img.shields.io/badge/license-MIT-orange.svg?style=flat-square)](http://opensource.org/licenses/MIT)
+[![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=svg)](https://circleci.com/gh/circleci/circleci-docs)
 
 ## Purpose
 
