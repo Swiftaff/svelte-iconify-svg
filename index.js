@@ -1,7 +1,8 @@
 "use strict";
 
-//const path = require("path");
+const mkdirp = require("mkdirp");
 const fs = require("fs");
+const getDirName = require("path").dirname;
 const { Collection } = require("@iconify/json-tools");
 
 function svelteiconifysvg(inputDirectoryArray, outputFilePath) {
@@ -17,7 +18,7 @@ function svelteiconifysvg(inputDirectoryArray, outputFilePath) {
 
 function getFilesInDirectory(dirsArr) {
     let ret = [];
-    dirsArr.forEach(dir => {
+    dirsArr.forEach((dir) => {
         try {
             ret.push({ dir, files: fs.readdirSync(dir, "utf8") });
         } catch (err) {
@@ -30,8 +31,8 @@ function getFilesInDirectory(dirsArr) {
 
 function getContentsOfAllFiles(dirFilesObjArr, output) {
     let html = "";
-    dirFilesObjArr.forEach(dirFilesObj => {
-        dirFilesObj.files.map(fileName => {
+    dirFilesObjArr.forEach((dirFilesObj) => {
+        dirFilesObj.files.map((fileName) => {
             if (
                 (fileName.endsWith(".svelte") || fileName.endsWith(".js")) &&
                 dirFilesObj.dir + "/" + fileName !== output
@@ -62,7 +63,7 @@ function getIconNamesFromTextUsingRegex(str) {
     const regexp = /(?<=("|'))(?!(bind|on|svelte))[a-zA-Z0-9-]+:[a-zA-Z0-9-]+(?=("|'))/g;
     let arr = [...str.matchAll(regexp)]; //note requires node 12
     let results = [];
-    arr.forEach(a => {
+    arr.forEach((a) => {
         if (!results.includes(a[0])) results.push(a[0]);
     });
     console.log("Found the following icons:", results.sort());
@@ -88,7 +89,7 @@ function getCodeFromIconList(icons) {
   export const icons = {
   `;
 
-    icons.forEach(origName => {
+    icons.forEach((origName) => {
         console.log("Generating SVG for: '" + origName + "'");
         let icon = origName;
         let parts = origName.split(":"),
@@ -111,13 +112,13 @@ function getCodeFromIconList(icons) {
     });
 
     // Parse each collection
-    Object.keys(filtered).forEach(prefix => {
+    Object.keys(filtered).forEach((prefix) => {
         let collection = new Collection();
         if (!collection.loadIconifyCollection(prefix)) {
             console.error("Error loading collection", prefix);
             return;
         }
-        filtered[prefix].map(iconObj => {
+        filtered[prefix].map((iconObj) => {
             let data = collection.getIconData(iconObj.name);
             code +=
                 '"' +
@@ -135,7 +136,7 @@ function getCodeFromIconList(icons) {
 }
 
 function getSVGHtmlFromData(d) {
-    return `
+    return `<svg 
 xmlns="http://www.w3.org/2000/svg"
 xmlns:xlink="http://www.w3.org/1999/xlink"
 aria-hidden="true"
@@ -149,8 +150,11 @@ ${d.body}
 </svg>`;
 }
 
-function saveCodeToFile(output, code) {
-    fs.writeFileSync(output, code, "utf8");
+function saveCodeToFile(output, code, cb) {
+    mkdirp(getDirName(output), function (err) {
+        if (err) console.log("saveCodeToFile error: ", err);
+        fs.writeFileSync(output, code, "utf8");
+    });
 }
 
 module.exports = svelteiconifysvg;
