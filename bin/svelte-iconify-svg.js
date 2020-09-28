@@ -38,12 +38,12 @@ const argv = yargs
     .option("input", {
         alias: "i",
         description: 'Directories to search. Provide them as a space separated list of strings. Default is "src"',
-        type: "array"
+        type: "array",
     })
     .option("output", {
         alias: "o",
         description: 'filePath to save, default is "src/icons.js"',
-        type: "string"
+        type: "string",
     })
     .help(true, helpText)
     .alias("help", "h").argv;
@@ -53,6 +53,5 @@ let inputDirectoryArray = argv.input || ["src"];
 let outputFilePath = argv.output || "src/icons.js";
 
 let thePath = process.argv[1];
-console.log(thePath);
 
 svelteiconifysvg(inputDirectoryArray, outputFilePath);

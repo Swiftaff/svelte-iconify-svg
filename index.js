@@ -6,12 +6,12 @@ const getDirName = require("path").dirname;
 const { Collection } = require("@iconify/json-tools");
 
 function svelteiconifysvg(inputDirectoryArray, outputFilePath) {
+    console.log("svelteiconifysvg");
     let dirFilesObjArr = getFilesInDirectory(inputDirectoryArray);
     let text = getContentsOfAllFiles(dirFilesObjArr, outputFilePath);
     let iconsList = getIconNamesFromTextUsingRegex(text);
     let iconCode = getCodeFromIconList(iconsList);
-    saveCodeToFile(outputFilePath, iconCode);
-    console.log("Saved " + iconsList.length + " icons bundle to", outputFilePath, " (" + iconCode.length + " bytes)");
+    saveCodeToFile(outputFilePath, iconCode, iconsList, outputFilePath, iconCode);
 }
 
 //----------------------------------------------------------------------------
@@ -25,7 +25,7 @@ function getFilesInDirectory(dirsArr) {
             console.log(err);
         }
     });
-    console.log("Found the following files:", ret);
+    console.log("- Found the following files:", ret);
     return ret;
 }
 
@@ -66,7 +66,7 @@ function getIconNamesFromTextUsingRegex(str) {
     arr.forEach((a) => {
         if (!results.includes(a[0])) results.push(a[0]);
     });
-    console.log("Found the following icons:", results.sort());
+    console.log("- Found the following icons:", results.sort());
     return results.sort();
 }
 
@@ -90,7 +90,7 @@ function getCodeFromIconList(icons) {
   `;
 
     icons.forEach((origName) => {
-        console.log("Generating SVG for: '" + origName + "'");
+        console.log("- Generating SVG for: '" + origName + "'");
         let icon = origName;
         let parts = origName.split(":"),
             prefix;
@@ -115,7 +115,7 @@ function getCodeFromIconList(icons) {
     Object.keys(filtered).forEach((prefix) => {
         let collection = new Collection();
         if (!collection.loadIconifyCollection(prefix)) {
-            console.error("Error loading collection", prefix);
+            console.error("- Error loading collection", prefix);
             return;
         }
         filtered[prefix].map((iconObj) => {
@@ -150,10 +150,16 @@ ${d.body}
 </svg>`;
 }
 
-function saveCodeToFile(output, code, cb) {
-    mkdirp(getDirName(output), function (err) {
-        if (err) console.log("saveCodeToFile error: ", err);
+function saveCodeToFile(output, code, iconsList, outputFilePath, iconCode) {
+    let dirname = getDirName(output);
+    mkdirp(dirname).then((made) => {
+        if (made) console.log("- mkdirp had to create some of these directories ", made);
         fs.writeFileSync(output, code, "utf8");
+        console.log(
+            "- Saved " + iconsList.length + " icons bundle to",
+            outputFilePath,
+            " (" + iconCode.length + " bytes)"
+        );
     });
 }
 

@@ -7,7 +7,7 @@
     "svelte-iconify-svg": "./bin/svelte-iconify-svg.js"
   },
   "scripts": {
-    "test": "node index -i 'test' -o 'test/icons.js'"
+    "test": "node bin/svelte-iconify-svg -i 'test' 'test2' -o 'test/test2/test3/icons.js'"
   },
   "repository": {
     "type": "git",
