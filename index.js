@@ -5,13 +5,23 @@ const fs = require("fs");
 const getDirName = require("path").dirname;
 const { Collection } = require("@iconify/json-tools");
 
-function svelteiconifysvg(inputDirectoryArray, outputFilePath) {
+function svelteiconifysvg(inputDirectoryArray, outputFilePath, optional_outputSVGfiles) {
     console.log("svelteiconifysvg");
     let dirFilesObjArr = getFilesInDirectory(inputDirectoryArray);
     let text = getContentsOfAllFiles(dirFilesObjArr, outputFilePath);
-    let iconsList = getIconNamesFromTextUsingRegex(text);
-    let iconCode = getCodeFromIconList(iconsList);
-    saveCodeToFile(outputFilePath, iconCode, iconsList, outputFilePath, iconCode);
+    if (optional_outputSVGfiles) {
+        console.log("testy");
+        let iconsList = getIconNamesFromTextUsingRegexV2(text);
+        getFilesFromIconList(iconsList, (code, filename) => {
+            console.log("filename", filename);
+            let dash = outputFilePath.endsWith("/") ? "" : "/";
+            saveCodeToFile(outputFilePath + dash + filename, code, iconsList);
+        });
+    } else {
+        let iconsList = getIconNamesFromTextUsingRegex(text);
+        let iconCode = getCodeFromIconList(iconsList);
+        saveCodeToFile(outputFilePath, iconCode, iconsList);
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -68,6 +78,75 @@ function getIconNamesFromTextUsingRegex(str) {
     });
     console.log("- Found the following icons:", results.sort());
     return results.sort();
+}
+
+function getIconNamesFromTextUsingRegexV2(str) {
+    //iconify icon names are in the format of alphanumeric:alphanumeric, where text can also contain dashes e.g.
+    //fa:random
+    //si-glyph:pin-location-2
+    //https://regex101.com
+    //(?<=")                must start with, but don't capture "
+    //(?!(bind|on|svelte))  must not start with these words, they're not icons but follow the same format!
+    //[a-zA-Z0-9-]+         any characters for first part of icon name (alphanumeric or a dash)
+    //:                     colon between words
+    //[a-zA-Z0-9-]+         as above
+    //(?=")                 must end with, but don't capture "
+    const regexp = /(?<=iconify#)[a-zA-Z0-9-]+(?=#iconify)/g;
+    let arr = [...str.matchAll(regexp)]; //note requires node 12
+    let results = [];
+    arr.forEach((a) => {
+        if (!results.includes(a[0])) results.push(a[0]);
+    });
+    console.log("- Found the following icons:", results.sort());
+    return results.sort();
+}
+
+function getFilesFromIconList(icons, callback) {
+    console.log("testy2");
+    // Sort icons by collections: filtered[prefix][array of icons]
+    let filtered = {};
+    icons.forEach((origNameWithFirstDash) => {
+        let origName = origNameWithFirstDash.replace("-", ":");
+        console.log("origName", origName, origNameWithFirstDash);
+
+        console.log("- Generating SVG for: '" + origName + "'");
+        let icon = origName;
+        let parts = origName.split(":"),
+            prefix;
+
+        if (parts.length > 1) {
+            prefix = parts.shift();
+            icon = parts.join(":");
+        } else {
+            parts = icon.split("-");
+            prefix = parts.shift();
+            icon = parts.join("-");
+        }
+        if (filtered[prefix] === void 0) {
+            filtered[prefix] = [];
+        }
+        if (filtered[prefix].indexOf(icon) === -1) {
+            filtered[prefix].push({ name: icon, origName });
+        }
+    });
+
+    // Parse each collection
+    Object.keys(filtered).forEach((prefix) => {
+        let collection = new Collection();
+        if (!collection.loadIconifyCollection(prefix)) {
+            console.error("- Error loading collection", prefix);
+            return;
+        }
+        filtered[prefix].map((iconObj) => {
+            let data = collection.getIconData(iconObj.name);
+            let code =
+                `<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">` +
+                getSVGHtmlFromData(data);
+            let filename = iconObj.origName.replace(":", "-") + ".svg";
+            callback(code, filename);
+        });
+    });
 }
 
 function getCodeFromIconList(icons) {
@@ -151,17 +230,17 @@ ${d.body}
 </svg>`;
 }
 
-function saveCodeToFile(output, code, iconsList, outputFilePath, iconCode) {
+function saveCodeToFile(output, code, iconsList) {
     let dirname = getDirName(output);
     mkdirp(dirname).then((made) => {
         if (made) console.log("- mkdirp had to create some of these directories ", made);
         fs.writeFileSync(output, code, "utf8");
-        console.log(
-            "- Saved " + iconsList.length + " icons bundle to",
-            outputFilePath,
-            " (" + iconCode.length + " bytes)"
-        );
+        console.log("- Saved " + iconsList.length + " icons bundle to", output, " (" + code.length + " bytes)");
     });
 }
 
 module.exports = svelteiconifysvg;
+
+/*
+
+*/
