@@ -5,22 +5,25 @@ const fs = require("fs");
 const getDirName = require("path").dirname;
 const { Collection } = require("@iconify/json-tools");
 
-function svelteiconifysvg(inputDirectoryArray, outputFilePath, optional_outputSVGfiles) {
+async function svelteiconifysvg(inputDirectoryArray, outputFilePath, options) {
     console.log("svelteiconifysvg");
+
+    inputDirectoryArray = Array.isArray(inputDirectoryArray) ? inputDirectoryArray : [inputDirectoryArray];
+
     let dirFilesObjArr = getFilesInDirectory(inputDirectoryArray);
     let text = getContentsOfAllFiles(dirFilesObjArr, outputFilePath);
-    if (optional_outputSVGfiles) {
-        console.log("testy");
+    if (options && options.outputSVGfiles) {
         let iconsList = getIconNamesFromTextUsingRegexV2(text);
-        getFilesFromIconList(iconsList, (code, filename) => {
-            console.log("filename", filename);
+        await getFilesFromIconList(iconsList, async (code, filename) => {
             let dash = outputFilePath.endsWith("/") ? "" : "/";
-            saveCodeToFile(outputFilePath + dash + filename, code, iconsList);
+            let fullpath = outputFilePath + dash + filename;
+            console.log("fullpath", fullpath);
+            await saveCodeToFile(fullpath, code, iconsList);
         });
     } else {
         let iconsList = getIconNamesFromTextUsingRegex(text);
-        let iconCode = getCodeFromIconList(iconsList);
-        saveCodeToFile(outputFilePath, iconCode, iconsList);
+        let iconCode = getCodeFromIconList(iconsList, options);
+        await saveCodeToFile(outputFilePath, iconCode, iconsList);
     }
 }
 
