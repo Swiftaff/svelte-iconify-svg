@@ -39,6 +39,13 @@ Add to your package.json, and run it as part of your dev or build step
 -   -o --output [default = "src/icons.js"]
     provide a single string path/filename to save the output to
 
+-   -c --cjs [default = false]
+    outputs the JS object as commonJs "module.exports = ", instead of the default ES6 export syntax "export const icons = "
+
+## Or use the script indirectly, via the rollup plugin
+
+https://github.com/Swiftaff/rollup-plugin-iconify-svg
+
 ## Usage (in svelte)
 
 It's a bit hacky, but the simplest way is to use the svelte @html feature
@@ -46,10 +53,30 @@ It's a bit hacky, but the simplest way is to use the svelte @html feature
 ```
 //example.svelte
 <script>
-import { icons } from "./src/icons.js";
+import icons from "./src/icons.js";
 </script>
 {@html icons["fa:random"]}
 <!-- note, so if this example.svelte file is in one of the input directories, the "fa:random" text above would have been found, and the icon auto-generated! -->
+```
+
+## Usage (in plain JavaScript)
+
+```
+const svelteiconifysvg = require("svelte-iconify-svg");
+const src = "src";
+const dest = "src/icons.js";
+const options = {
+    commonJs: true, //default false
+};
+const icons = svelteiconifysvg(src, dest, options);
+console.log(icons);
+/*
+Do with the resulting object what you will...
+icons = {
+  "fa:random": "...svg markup for this icon",
+  ... other icons
+}
+*/
 ```
 
 ## License
