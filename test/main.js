@@ -39,6 +39,14 @@ test("test4 fn - multiple inputs", async (t) => {
     t.snapshot(test4);
 });
 
+test("test9 fn - typo in icon names should log but not fail", async (t) => {
+    await svelteiconifysvg(["test/fixtures/test9"], "test/outputs/test9/icons.js", {
+        commonJs: true,
+    });
+    const test9 = require("../test/outputs/test9/icons.js");
+    t.snapshot(test9);
+});
+
 //test original deep directories node bin/svelte-iconify-svg -i 'test' 'test2' -o 'test/test2/test3/icons.js'
 //test CLI not just fn
 

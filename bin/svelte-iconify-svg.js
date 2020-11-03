@@ -28,7 +28,7 @@ a) add to the package.json, and run it as part of your dev or build step, or use
 b) in svelte
 //example.svelte
 <script>
-import { icons } from "./icons.js";
+import icons from "./icons.js";
 </script>
 {@html icons["fa:random"]}
 <!-- note, so if this example.svelte file is in one of the input directories, the "fa:random" text above would have been found, and the icon auto-generated! -->

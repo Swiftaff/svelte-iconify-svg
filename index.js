@@ -6,7 +6,7 @@ const getDirName = require("path").dirname;
 const { Collection } = require("@iconify/json-tools");
 
 async function svelteiconifysvg(inputDirectoryArray, outputFilePath, options) {
-    console.log("svelteiconifysvg");
+    console.log("\r\nsvelteiconifysvg");
 
     inputDirectoryArray = Array.isArray(inputDirectoryArray) ? inputDirectoryArray : [inputDirectoryArray];
 
@@ -18,12 +18,12 @@ async function svelteiconifysvg(inputDirectoryArray, outputFilePath, options) {
             let dash = outputFilePath.endsWith("/") ? "" : "/";
             let fullpath = outputFilePath + dash + filename;
             console.log("fullpath", fullpath);
-            await saveCodeToFile(fullpath, code, iconsList);
+            await saveCodeToFile(fullpath, code, iconsList.length, iconsList.length);
         });
     } else {
         let iconsList = getIconNamesFromTextUsingRegex(text);
-        let iconCode = getCodeFromIconList(iconsList, options);
-        await saveCodeToFile(outputFilePath, iconCode, iconsList);
+        let { code, count } = getCodeFromIconList(iconsList, options);
+        await saveCodeToFile(outputFilePath, code, count, iconsList.length);
     }
 }
 
@@ -79,7 +79,7 @@ function getIconNamesFromTextUsingRegex(str) {
     arr.forEach((a) => {
         if (!results.includes(a[0])) results.push(a[0]);
     });
-    console.log("- Found the following icons:", results.sort());
+    console.log("- Found the following icon references:", results.sort());
     return results.sort();
 }
 
@@ -155,7 +155,8 @@ function getCodeFromIconList(icons, options) {
     // Sort icons by collections: filtered[prefix][array of icons]
     let filtered = {};
     let exportText = options && options.commonJs ? "module.exports = " : "export default";
-
+    let count = 0;
+    let errors = "";
     let code = `/*
 This file was generated directly by 'https://github.com/Swiftaff/svelte-iconify-svg' 
 or via the rollup plugin 'https://github.com/Swiftaff/rollup-plugin-iconify-svg'.
@@ -175,7 +176,6 @@ ${exportText} {
   `;
 
     icons.forEach((origName) => {
-        console.log("- Generating SVG for: '" + origName + "'");
         let icon = origName;
         let parts = origName.split(":"),
             prefix;
@@ -199,25 +199,43 @@ ${exportText} {
     // Parse each collection
     Object.keys(filtered).forEach((prefix) => {
         let collection = new Collection();
-        if (!collection.loadIconifyCollection(prefix)) {
-            console.error("- Error loading collection", prefix);
-            return;
-        }
-        filtered[prefix].map((iconObj) => {
-            let data = collection.getIconData(iconObj.name);
-            code +=
-                '"' +
-                iconObj.origName +
-                '": `' +
-                getSVGHtmlFromData(data) +
-                "`," +
-                `
+        let loaded = collection.loadIconifyCollection(prefix);
+        if (!loaded) {
+            let this_error =
+                "x ERROR no such icon prefix '" +
+                prefix +
+                ":' - in these icon names (" +
+                filtered[prefix].map((f) => "'" + f.origName + "'").join(",") +
+                ")";
+
+            errors += this_error + "\r\n";
+            console.error(this_error);
+        } else {
+            filtered[prefix].map((iconObj) => {
+                let data = collection.getIconData(iconObj.name);
+                if (data) {
+                    console.log("- Generating SVG for: '" + iconObj.origName + "'");
+                    code +=
+                        '"' +
+                        iconObj.origName +
+                        '": `' +
+                        getSVGHtmlFromData(data) +
+                        "`," +
+                        `
     `;
-        });
+                    count++;
+                } else {
+                    let this_error = "x ERROR no such icon name   '" + iconObj.origName + "'";
+                    errors += this_error + "\r\n";
+                    console.error(this_error);
+                }
+            });
+        }
     });
     code += `}
 `;
-    return code;
+    code = errors.length ? `/*\r\n${errors}*/\r\n\r\n${code}` : code;
+    return { code, count };
 }
 
 function getSVGHtmlFromData(d) {
@@ -236,12 +254,16 @@ ${d.body}
 </svg>`;
 }
 
-async function saveCodeToFile(output, code, iconsList) {
+async function saveCodeToFile(output, code, iconCount, iconTotal) {
     let dirname = getDirName(output);
     const made = mkdirp.sync(dirname);
     if (made) console.log("- mkdirp had to create some of these directories ", made);
     fs.writeFileSync(output, code, "utf8");
-    console.log("- Saved " + iconsList.length + " icons bundle to", output, " (" + code.length + " bytes)");
+    console.log(
+        "- Saved " + iconCount + " of " + iconTotal + " icons bundle to",
+        output,
+        " (" + code.length + " bytes)"
+    );
 }
 
 module.exports = svelteiconifysvg;
