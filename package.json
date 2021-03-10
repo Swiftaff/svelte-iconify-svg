@@ -7,8 +7,8 @@
     "svelte-iconify-svg": "bin/svelte-iconify-svg.js"
   },
   "scripts": {
-    "test": "ava",
-    "test_verbose": "ava -v"
+    "test": "ava --timeout=30s",
+    "test_verbose": "ava -v --timeout=30s"
   },
   "ava": {
     "require": [
