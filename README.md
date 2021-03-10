@@ -34,13 +34,19 @@ Add to your package.json, and run it as part of your dev or build step
 ### Options
 
 -   -i or --input [default = "src"]
-    provide a space separated list of strings for all folder paths you wish to search
+    Directories to search. Provide them as a space separated list of strings. _FULL PATHS ONLY AT THE MOMENT_
 
 -   -o --output [default = "src/icons.js"]
-    provide a single string path/filename to save the output to
+    FilePath to save
+
+-   -f --outputsvgfiles [default = false]
+    Outputs as individual svg files. Default is a single JS object of all icons SVG code
 
 -   -c --cjs [default = false]
     outputs the JS object as commonJs "module.exports = ", instead of the default ES6 export syntax "export const icons = "
+
+-   -s -alwaysSave [default = false]
+    forces the iconify API network call and re-save of the icons file, instead of the default which will skip these if the icons list has not changed
 
 ## Or use the script indirectly, via the rollup plugin
 

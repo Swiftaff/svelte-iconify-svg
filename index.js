@@ -22,12 +22,41 @@ async function svelteiconifysvg(inputDirectoryArray, outputFilePath, options) {
         });
     } else {
         let iconsList = getIconNamesFromTextUsingRegex(text);
-        let { code, count } = getCodeFromIconList(iconsList, options);
-        await saveCodeToFile(outputFilePath, code, count, iconsList.length);
+        if ((options && options.alwaysSave) || !options) {
+            //alwaysSave = false is default
+            let iconListHasChanged = await getWhetherIconListHasChanged(iconsList, outputFilePath);
+            if (iconListHasChanged) {
+                let { code, count } = getCodeFromIconList(iconsList, options);
+                await saveCodeToFile(outputFilePath, code, count, iconsList.length);
+            } else {
+                console.log("- Skipped getting & saving icons - current list is already saved");
+            }
+        } else {
+            let { code, count } = getCodeFromIconList(iconsList, options);
+            await saveCodeToFile(outputFilePath, code, count, iconsList.length);
+        }
     }
 }
 
 //----------------------------------------------------------------------------
+
+async function getWhetherIconListHasChanged(iconsList, outputFilePath) {
+    // returning true represents needing the iconsList to be resaved
+    try {
+        const data = fs.readFileSync(outputFilePath, "utf8");
+        let savedIconsList = require(outputFilePath);
+        if (savedIconsList && typeof savedIconsList === "object") {
+            return (
+                iconsList.length === savedIconsList.length &&
+                savedIconsList.filter((icon_name) => iconsList.includes(icon_name)).length === savedIconsList.length
+            );
+        } else {
+            return true;
+        }
+    } catch (error) {
+        return true;
+    }
+}
 
 function getFilesInDirectory(dirsArr) {
     let ret = [];
