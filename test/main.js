@@ -63,8 +63,12 @@ test("test 10b fn - if icon file exists but is not a module or object", async (t
     await svelteiconifysvg(["test/fixtures/test1"], filepath, {
         commonJs: true,
     });
-    const test10b = require("../test/outputs/test10/icons10b.js");
-    t.snapshot(test10b);
+    let test10b;
+    try {
+        test10b = require(filepath);
+    } catch (_) {
+        t.snapshot(test10b);
+    }
 });
 
 test("test 10c fn - if icon list is same as saved don't resave it if alwaysSave is false", async (t) => {
