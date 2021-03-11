@@ -1,4 +1,7 @@
 node_modules
 *.code-workspace
-test/outputs/*/*.js
+test/outputs/*
+!test/outputs/test10
+test/outputs/test10/*
+!test/outputs/test10/icons10b.js
 src/*.js
