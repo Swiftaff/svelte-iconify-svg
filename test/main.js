@@ -65,7 +65,7 @@ test("test 10b fn - if icon file exists but is not a module or object", async (t
     });
     let test10b;
     try {
-        test10b = require(filepath);
+        test10b = require("../test/outputs/test10/icons10b.js");
     } catch (_) {
         t.snapshot(test10b);
     }
