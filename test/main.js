@@ -1,5 +1,6 @@
 const test = require("ava");
 const fs = require("fs");
+const path = require("path");
 const withPage = require("./_withPage");
 const svelteiconifysvg = require("../index");
 const spawnSync = require("child_process").spawnSync;
@@ -58,21 +59,17 @@ test("test 10a fn - intitial missing icon file should continue and save, not err
 });
 
 test("test 10b fn - if icon file exists but is not a module or object", async (t) => {
-    const filepath = "./test/outputs/test10/icons10b.js";
+    const filepath = path.join(__dirname, "/outputs/test10/icons10b.js");
     fs.writeFileSync(filepath, "//not a module");
     await svelteiconifysvg(["test/fixtures/test1"], filepath, {
         commonJs: true,
     });
-    let test10b;
-    try {
-        test10b = require("../test/outputs/test10/icons10b.js");
-    } catch (_) {
-        t.snapshot(test10b);
-    }
+    const test10b = require("../test/outputs/test10/icons10b.js");
+    t.snapshot(test10b);
 });
 
 test("test 10c fn - if icon list is same as saved don't resave it if alwaysSave is false", async (t) => {
-    const filepath = "./test/outputs/test10/icons10c.js";
+    const filepath = "/test/outputs/test10/icons10c.js";
     await svelteiconifysvg(["test/fixtures/test1"], filepath, {
         commonJs: true,
         alwaysSave: true,
