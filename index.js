@@ -2,11 +2,12 @@
 
 const mkdirp = require("mkdirp");
 const fs = require("fs");
-const getDirName = require("path").dirname;
+const path = require("path");
+const getDirName = path.dirname;
 const { Collection } = require("@iconify/json-tools");
 
 async function svelteiconifysvg(inputDirectoryArray, outputFilePath, options) {
-    console.log("\r\nsvelteiconifysvg");
+    console.log("\r\nsvelteiconifysvg v2.1.0");
 
     inputDirectoryArray = Array.isArray(inputDirectoryArray) ? inputDirectoryArray : [inputDirectoryArray];
 
@@ -14,6 +15,7 @@ async function svelteiconifysvg(inputDirectoryArray, outputFilePath, options) {
     let text = getContentsOfAllFiles(dirFilesObjArr, outputFilePath);
     if (options && options.outputSVGfiles) {
         let iconsList = getIconNamesFromTextUsingRegexV2(text);
+        console.log("svg", iconsList);
         await getFilesFromIconList(iconsList, async (code, filename) => {
             let dash = outputFilePath.endsWith("/") ? "" : "/";
             let fullpath = outputFilePath + dash + filename;
@@ -22,7 +24,7 @@ async function svelteiconifysvg(inputDirectoryArray, outputFilePath, options) {
         });
     } else {
         let iconsList = getIconNamesFromTextUsingRegex(text);
-        if ((options && options.alwaysSave) || !options) {
+        if ((options && !options.alwaysSave) || !options) {
             //alwaysSave = false is default
             let iconListHasChanged = await getWhetherIconListHasChanged(iconsList, outputFilePath);
             if (iconListHasChanged) {
@@ -42,18 +44,26 @@ async function svelteiconifysvg(inputDirectoryArray, outputFilePath, options) {
 
 async function getWhetherIconListHasChanged(iconsList, outputFilePath) {
     // returning true represents needing the iconsList to be resaved
+    const actualpath = await path.resolve(outputFilePath);
+
+    // try to read current icons file
     try {
-        const data = fs.readFileSync(outputFilePath, "utf8");
-        let savedIconsList = require(outputFilePath);
-        if (savedIconsList && typeof savedIconsList === "object") {
-            return (
-                iconsList.length === savedIconsList.length &&
-                savedIconsList.filter((icon_name) => iconsList.includes(icon_name)).length === savedIconsList.length
-            );
-        } else {
+        const data = fs.readFileSync(actualpath, "utf8");
+    } catch (e) {
+        console.log("- alwaysSave: output path doesn't exist so saving anyway");
         return true;
     }
-    } catch (error) {
+
+    // try to get icons list from icons file
+    let contents = getContentsOfOneFile(actualpath);
+    let savedIconsList = getIconNamesFromTextUsingRegex(contents, { suppress_log: true, duplicates: true });
+    if (savedIconsList && Array.isArray(savedIconsList)) {
+        let sameLength = iconsList.length === savedIconsList.length;
+        let doesNotIncludeAllIcons =
+            savedIconsList.filter((icon_name) => iconsList.includes(icon_name)).length !== savedIconsList.length;
+        return !sameLength || doesNotIncludeAllIcons;
+    } else {
+        console.log("- alwaysSave: new icons found so saving anyway");
         return true;
     }
 }
@@ -142,7 +152,7 @@ function getFilesFromIconList(icons, callback) {
     let filtered = {};
     icons.forEach((origNameWithFirstDash) => {
         let origName = origNameWithFirstDash.replace("-", ":");
-        console.log("origName", origName, origNameWithFirstDash);
+        //console.log("origName", origName, origNameWithFirstDash);
 
         console.log("- Generating SVG for: '" + origName + "'");
         let icon = origName;
