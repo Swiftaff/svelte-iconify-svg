@@ -7,7 +7,7 @@ const getDirName = path.dirname;
 const { Collection } = require("@iconify/json-tools");
 
 async function svelteiconifysvg(inputDirectoryArray, outputFilePath, options) {
-    console.log("\r\nsvelteiconifysvg v2.1.0");
+    console.log("\r\nsvelteiconifysvg v2.1.1");
 
     inputDirectoryArray = Array.isArray(inputDirectoryArray) ? inputDirectoryArray : [inputDirectoryArray];
 
@@ -15,7 +15,6 @@ async function svelteiconifysvg(inputDirectoryArray, outputFilePath, options) {
     let text = getContentsOfAllFiles(dirFilesObjArr, outputFilePath);
     if (options && options.outputSVGfiles) {
         let iconsList = getIconNamesFromTextUsingRegexV2(text);
-        console.log("svg", iconsList);
         await getFilesFromIconList(iconsList, async (code, filename) => {
             let dash = outputFilePath.endsWith("/") ? "" : "/";
             let fullpath = outputFilePath + dash + filename;
