@@ -59,7 +59,7 @@ test("test 10a fn - intitial missing icon file should continue and save, not err
 });
 
 test("test 10b fn - if icon file exists but is not a module or object", async (t) => {
-    const filepath = path.join(__dirname, "/outputs/test10/icons10b.js");
+    const filepath = "/test/outputs/test10/icons10b.js";
     await svelteiconifysvg(["test/fixtures/test1"], filepath, {
         commonJs: true,
     });
