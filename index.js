@@ -51,8 +51,8 @@ async function getWhetherIconListHasChanged(iconsList, outputFilePath) {
                 savedIconsList.filter((icon_name) => iconsList.includes(icon_name)).length === savedIconsList.length
             );
         } else {
-            return true;
-        }
+        return true;
+    }
     } catch (error) {
         return true;
     }
@@ -189,16 +189,6 @@ function getCodeFromIconList(icons, options) {
     let code = `/*
 This file was generated directly by 'https://github.com/Swiftaff/svelte-iconify-svg' 
 or via the rollup plugin 'https://github.com/Swiftaff/rollup-plugin-iconify-svg'.
-
-You can import this file to create an object of all 'iconify' icons which were found in your project.
-
-You can then include, e.g. {@html 'icons["fa:random]'} in your svelte file to display the icon.
-it's a bit hacky, and this file will get large for large amounts of icons.
-But it may be preferrable to using the standard iconify scripts to pull in the icons each time.
-
-You can regenerate this file using the packages named above which will check the contents of all files in the 'input' directories supplied  for any references to 'iconify' icons
-i.e. anything in quotes of the format alphanumericordashes:alphanumericordashes, e.g. "fa:random" or 'si-glyph:pin-location-2' />'
-and generate this file containine a list of those iconify icon references with their SVG markup.
 */
 
 ${exportText} {
