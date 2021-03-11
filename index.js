@@ -91,7 +91,7 @@ function getContentsOfAllFiles(dirFilesObjArr, output) {
     return html;
 }
 
-function getIconNamesFromTextUsingRegex(str) {
+function getIconNamesFromTextUsingRegex(str, options) {
     //iconify icon names are in the format of alphanumeric:alphanumeric, where text can also contain dashes e.g.
     //fa:random
     //si-glyph:pin-location-2
@@ -106,9 +106,9 @@ function getIconNamesFromTextUsingRegex(str) {
     let arr = [...str.matchAll(regexp)]; //note requires node 12
     let results = [];
     arr.forEach((a) => {
-        if (!results.includes(a[0])) results.push(a[0]);
+        if ((options && options.duplicates) || !results.includes(a[0])) results.push(a[0]);
     });
-    console.log("- Found the following icon references:", results.sort());
+    if (!(options && options.suppress_log)) console.log("- Found the following icon references:", results.sort());
     return results.sort();
 }
 
