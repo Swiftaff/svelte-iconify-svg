@@ -58,16 +58,14 @@ test("test 10a fn - intitial missing icon file should continue and save, not err
     t.snapshot(test10a);
 });
 
-/*
-// temporarily removed due to circleci error: EACCES: permission denied, mkdir \'/test/outputs/test10\'
 test("test 10b fn - if icon file exists but is not a module or object", async (t) => {
-    const filepath = "/test/outputs/test10/icons10b.js";
+    const filepath = path.join(__dirname, "/outputs/test10/icons10b.js");
     await svelteiconifysvg(["test/fixtures/test1"], filepath, {
         commonJs: true,
     });
-    const test10b = require("../test/outputs/test10/icons10b.js");
+    const test10b = require(filepath);
     t.snapshot(test10b);
-});*/
+});
 
 test("test 10c fn - if icon list is same as saved don't resave it if alwaysSave is false", async (t) => {
     const filepath = "/test/outputs/test10/icons10c.js";
