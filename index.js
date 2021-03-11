@@ -79,16 +79,20 @@ function getContentsOfAllFiles(dirFilesObjArr, output) {
                 (fileName.endsWith(".svelte") || fileName.endsWith(".js")) &&
                 dirFilesObj.dir + "/" + fileName !== output
             ) {
-                try {
-                    const data = fs.readFileSync(dirFilesObj.dir + "/" + fileName, "utf8");
-                    html += data;
-                } catch (err) {
-                    console.error(err);
-                }
+                html += getContentsOfOneFile(dirFilesObj.dir + "/" + fileName);
             }
         });
     });
     return html;
+}
+
+function getContentsOfOneFile(file) {
+    try {
+        return fs.readFileSync(file, "utf8");
+    } catch (err) {
+        //console.error(err);
+        return "";
+    }
 }
 
 function getIconNamesFromTextUsingRegex(str, options) {
