@@ -68,7 +68,7 @@ test("test 10b fn - if icon file exists but is not a module or object", async (t
 });
 
 test("test 10c fn - if icon list is same as saved don't resave it if alwaysSave is false", async (t) => {
-    const filepath = "/test/outputs/test10/icons10c.js";
+    const filepath = path.join(__dirname, "/outputs/test10/icons10c.js");
     await svelteiconifysvg(["test/fixtures/test1"], filepath, {
         commonJs: true,
         alwaysSave: true,
