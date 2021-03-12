@@ -1,6 +1,6 @@
 {
   "name": "svelte-iconify-svg",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "A node script to autogenerate svg markup from iconify references in your svelte project",
   "main": "index.js",
   "bin": {
@@ -35,13 +35,13 @@
   "dependencies": {
     "@iconify/json": "^1.1.314",
     "@iconify/json-tools": "^1.0.10",
+    "fs-readdir-recursive": "^1.1.0",
     "mkdirp": "^1.0.4",
     "yargs": "^16.2.0"
   },
   "devDependencies": {
     "ava": "^3.15.0",
     "esm": "^3.2.25",
-    "fs-readdir-recursive": "^1.1.0",
     "puppeteer": "^8.0.0"
   }
 }
