@@ -2,16 +2,17 @@
 
 const mkdirp = require("mkdirp");
 const fs = require("fs");
+const readRecursive = require("fs-readdir-recursive");
 const path = require("path");
 const getDirName = path.dirname;
 const { Collection } = require("@iconify/json-tools");
 
 async function svelteiconifysvg(inputDirectoryArray, outputFilePath, options) {
-    console.log("\r\nsvelteiconifysvg v2.1.1");
+    console.log("\r\nsvelteiconifysvg v2.2.0");
 
     inputDirectoryArray = Array.isArray(inputDirectoryArray) ? inputDirectoryArray : [inputDirectoryArray];
 
-    let dirFilesObjArr = getFilesInDirectory(inputDirectoryArray);
+    let dirFilesObjArr = getFilesInDirectory(inputDirectoryArray, options);
     let text = getContentsOfAllFiles(dirFilesObjArr, outputFilePath);
     if (options && options.outputSVGfiles) {
         let iconsList = getIconNamesFromTextUsingRegexV2(text);
@@ -67,11 +68,16 @@ async function getWhetherIconListHasChanged(iconsList, outputFilePath) {
     }
 }
 
-function getFilesInDirectory(dirsArr) {
+function getFilesInDirectory(dirsArr, options) {
     let ret = [];
     dirsArr.forEach((dir) => {
         try {
-            ret.push({ dir, files: fs.readdirSync(dir, "utf8") });
+            if (options && options.recursive) {
+                // recursive = true (make this the default)
+                ret.push({ dir, files: readRecursive(dir) });
+            } else {
+                ret.push({ dir, files: fs.readdirSync(dir, "utf8") });
+            }
         } catch (err) {
             console.log(err);
         }

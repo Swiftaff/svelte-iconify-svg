@@ -116,9 +116,22 @@ test("test 10e fn - if icon list is same as saved - DO save if alwaysSave is tru
     t.snapshot({ test10e: modified1 !== modified2 });
 });
 
-//test original deep directories node bin/svelte-iconify-svg -i 'test' 'test2' -o 'test/test2/test3/icons.js'
-//test CLI not just fn
+test("test 11a fn - no recursive file finding by default", async (t) => {
+    await svelteiconifysvg("test/fixtures/test11", "test/outputs/test11/icons11a.js", {
+        commonJs: true,
+    });
+    const test11 = require("../test/outputs/test11/icons.js");
+    t.snapshot(test11);
+});
 
+test("test 11b fn - recursive file finding with option", async (t) => {
+    await svelteiconifysvg("test/fixtures/test11", "test/outputs/test11/icons11b.js", {
+        commonJs: true,
+        recursive: true,
+    });
+    const test11 = require("../test/outputs/test11/icons.js");
+    t.snapshot(test11);
+});
 
 //
 // test CLI not just fn
@@ -263,4 +276,35 @@ test("test 10e cli - if icon list is same as saved - DO save if alwaysSave is se
     const stats2 = fs.statSync(filepath);
     const modified2 = stats2.mtime;
     t.snapshot({ test10e: modified1 !== modified2 });
+});
+
+test("test 11a cli - no recursive file finding by default", async (t) => {
+    const filepath = "test/outputs/test11/icons11a_cli.js";
+    const result = spawnSync("node", [
+        "bin/svelte-iconify-svg",
+        "-i",
+        "'test/fixtures/test11'",
+        "-o",
+        "'" + filepath + "'",
+        "-cjs",
+    ]);
+
+    const test11acli = require("../test/outputs/test11/icons11a_cli.js");
+    t.snapshot(test11acli);
+});
+
+test("test 11b cli - recursive file finding with option", async (t) => {
+    const filepath = "test/outputs/test11/icons11b_cli.js";
+    const result = spawnSync("node", [
+        "bin/svelte-iconify-svg",
+        "-i",
+        "'test/fixtures/test11'",
+        "-o",
+        "'" + filepath + "'",
+        "-cjs",
+        "-r",
+    ]);
+
+    const test11acli = require("../test/outputs/test11/icons11b_cli.js");
+    t.snapshot(test11acli);
 });

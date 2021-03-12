@@ -31,22 +31,25 @@ Add to your package.json, and run it as part of your dev or build step
 }
 ```
 
-### Options
+### Flags
 
--   -i or --input [default = "src"]
+-   -i or --input [default = "src"]<br>
     Directories to search. Provide them as a space separated list of strings. _FULL PATHS ONLY AT THE MOMENT_
 
--   -o --output [default = "src/icons.js"]
+-   -o --output [default = "src/icons.js"]<br>
     FilePath to save
 
--   -f --outputsvgfiles [default = false]
+-   -f --outputsvgfiles [default = false]<br>
     Outputs as individual svg files. Default is a single JS object of all icons SVG code
 
--   -c --cjs [default = false]
+-   -c --cjs [default = false]<br>
     outputs the JS object as commonJs "module.exports = ", instead of the default ES6 export syntax "export const icons = "
 
--   -s -alwaysSave [default = false]
+-   -s --alwaysSave [default = false]<br>
     forces the iconify API network call and re-save of the icons file, instead of the default which will skip these if the icons list has not changed
+
+-   -r --recursive [default = false]<br>
+    recursively searches within each input directory, instead of the default which will only search within the first level of input directories
 
 ## Or use the script indirectly, via the rollup plugin
 
@@ -72,7 +75,9 @@ const svelteiconifysvg = require("svelte-iconify-svg");
 const src = "src";
 const dest = "src/icons.js";
 const options = {
-    commonJs: true, //default false
+    commonJs: true,   //default false
+    alwaysSave: true, //default false
+    recursive: true,  //default false
 };
 const icons = svelteiconifysvg(src, dest, options);
 console.log(icons);
