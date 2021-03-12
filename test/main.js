@@ -60,6 +60,7 @@ test("test 10a fn - intitial missing icon file should continue and save, not err
 
 test("test 10b fn - if icon file exists but is not a module or object", async (t) => {
     const filepath = path.join(__dirname, "/outputs/test10/icons10b.js");
+    //await del([filepath]);
     await svelteiconifysvg(["test/fixtures/test1"], filepath, {
         commonJs: true,
     });
@@ -120,7 +121,7 @@ test("test 11a fn - no recursive file finding by default", async (t) => {
     await svelteiconifysvg("test/fixtures/test11", "test/outputs/test11/icons11a.js", {
         commonJs: true,
     });
-    const test11 = require("../test/outputs/test11/icons.js");
+    const test11 = require("../test/outputs/test11/icons11a.js");
     t.snapshot(test11);
 });
 
@@ -129,7 +130,7 @@ test("test 11b fn - recursive file finding with option", async (t) => {
         commonJs: true,
         recursive: true,
     });
-    const test11 = require("../test/outputs/test11/icons.js");
+    const test11 = require("../test/outputs/test11/icons11b.js");
     t.snapshot(test11);
 });
 
