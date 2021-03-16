@@ -8,41 +8,46 @@ const getDirName = path.dirname;
 const { Collection } = require("@iconify/json-tools");
 
 async function svelteiconifysvg(inputDirectoryArray, outputFilePath, options) {
-    console.log("\r\nsvelteiconifysvg v2.2.0");
+    if (logit("primary", options)) console.log("\r\nsvelteiconifysvg v2.2.2");
 
     inputDirectoryArray = Array.isArray(inputDirectoryArray) ? inputDirectoryArray : [inputDirectoryArray];
 
     let dirFilesObjArr = getFilesInDirectory(inputDirectoryArray, options);
-    let text = getContentsOfAllFiles(dirFilesObjArr, outputFilePath);
+    let text = getContentsOfAllFiles(dirFilesObjArr, outputFilePath, options);
     if (options && options.outputSVGfiles) {
-        let iconsList = getIconNamesFromTextUsingRegexV2(text);
-        await getFilesFromIconList(iconsList, async (code, filename) => {
-            let dash = outputFilePath.endsWith("/") ? "" : "/";
-            let fullpath = outputFilePath + dash + filename;
-            console.log("fullpath", fullpath);
-            await saveCodeToFile(fullpath, code, iconsList.length, iconsList.length);
-        });
+        let iconsList = getIconNamesFromTextUsingRegexV2(text, options);
+        await getFilesFromIconList(
+            iconsList,
+            async (code, filename) => {
+                let dash = outputFilePath.endsWith("/") ? "" : "/";
+                let fullpath = outputFilePath + dash + filename;
+                if (logit("secondary", options)) console.log("fullpath " + fullpath);
+                await saveCodeToFile(fullpath, code, iconsList.length, iconsList.length, options);
+            },
+            options
+        );
     } else {
         let iconsList = getIconNamesFromTextUsingRegex(text);
         if ((options && !options.alwaysSave) || !options) {
             //alwaysSave = false is default
-            let iconListHasChanged = await getWhetherIconListHasChanged(iconsList, outputFilePath);
+            let iconListHasChanged = await getWhetherIconListHasChanged(iconsList, outputFilePath, options);
             if (iconListHasChanged) {
                 let { code, count } = getCodeFromIconList(iconsList, options);
-                await saveCodeToFile(outputFilePath, code, count, iconsList.length);
+                await saveCodeToFile(outputFilePath, code, count, iconsList.length, options);
             } else {
-                console.log("- Skipped getting & saving icons - current list is already saved");
+                if (logit("primary", options))
+                    console.log("- Skipped getting & saving icons - current list is already saved");
             }
         } else {
             let { code, count } = getCodeFromIconList(iconsList, options);
-            await saveCodeToFile(outputFilePath, code, count, iconsList.length);
+            await saveCodeToFile(outputFilePath, code, count, iconsList.length, options);
         }
     }
 }
 
 //----------------------------------------------------------------------------
 
-async function getWhetherIconListHasChanged(iconsList, outputFilePath) {
+async function getWhetherIconListHasChanged(iconsList, outputFilePath, options) {
     // returning true represents needing the iconsList to be resaved
     const actualpath = await path.resolve(outputFilePath);
 
@@ -50,12 +55,12 @@ async function getWhetherIconListHasChanged(iconsList, outputFilePath) {
     try {
         const data = fs.readFileSync(actualpath, "utf8");
     } catch (e) {
-        console.log("- alwaysSave: output path doesn't exist so saving anyway");
+        if (logit("secondary", options)) console.log("- alwaysSave: output path doesn't exist so saving anyway");
         return true;
     }
 
     // try to get icons list from icons file
-    let contents = getContentsOfOneFile(actualpath);
+    let contents = getContentsOfOneFile(actualpath, options);
     let savedIconsList = getIconNamesFromTextUsingRegex(contents, { suppress_log: true, duplicates: true });
     if (savedIconsList && Array.isArray(savedIconsList)) {
         let sameLength = iconsList.length === savedIconsList.length;
@@ -63,7 +68,7 @@ async function getWhetherIconListHasChanged(iconsList, outputFilePath) {
             savedIconsList.filter((icon_name) => iconsList.includes(icon_name)).length !== savedIconsList.length;
         return !sameLength || doesNotIncludeAllIcons;
     } else {
-        console.log("- alwaysSave: new icons found so saving anyway");
+        if (logit("secondary", options)) console.log("- alwaysSave: new icons found so saving anyway");
         return true;
     }
 }
@@ -79,14 +84,16 @@ function getFilesInDirectory(dirsArr, options) {
                 ret.push({ dir, files: fs.readdirSync(dir, "utf8") });
             }
         } catch (err) {
-            console.log(err);
+            if (logit("primary", options)) console.log("- Error getting files in directory");
+            if (logit("secondary", options)) console.error(err);
         }
     });
-    console.log("- Found the following files:", ret);
+    if (logit("primary", options)) console.log("- Found " + ret.length + " file" + (ret.length > 1 ? "s" : ""));
+    if (logit("secondary", options)) console.log(ret);
     return ret;
 }
 
-function getContentsOfAllFiles(dirFilesObjArr, output) {
+function getContentsOfAllFiles(dirFilesObjArr, output, options) {
     let html = "";
     dirFilesObjArr.forEach((dirFilesObj) => {
         dirFilesObj.files.map((fileName) => {
@@ -94,18 +101,19 @@ function getContentsOfAllFiles(dirFilesObjArr, output) {
                 (fileName.endsWith(".svelte") || fileName.endsWith(".js")) &&
                 dirFilesObj.dir + "/" + fileName !== output
             ) {
-                html += getContentsOfOneFile(dirFilesObj.dir + "/" + fileName);
+                html += getContentsOfOneFile(dirFilesObj.dir + "/" + fileName, options);
             }
         });
     });
     return html;
 }
 
-function getContentsOfOneFile(file) {
+function getContentsOfOneFile(file, options) {
     try {
         return fs.readFileSync(file, "utf8");
     } catch (err) {
-        //console.error(err);
+        if (logit("secondary", options)) console.log("- Error getting contents of file " + file);
+        if (logit("secondary", options)) console.log(err);
         return "";
     }
 }
@@ -127,11 +135,11 @@ function getIconNamesFromTextUsingRegex(str, options) {
     arr.forEach((a) => {
         if ((options && options.duplicates) || !results.includes(a[0])) results.push(a[0]);
     });
-    if (!(options && options.suppress_log)) console.log("- Found the following icon references:", results.sort());
+    if (logit("secondary", options)) console.log("- Found the following icon references:", results.sort());
     return results.sort();
 }
 
-function getIconNamesFromTextUsingRegexV2(str) {
+function getIconNamesFromTextUsingRegexV2(str, options) {
     //iconify icon names are in the format of alphanumeric:alphanumeric, where text can also contain dashes e.g.
     //fa:random
     //si-glyph:pin-location-2
@@ -148,18 +156,18 @@ function getIconNamesFromTextUsingRegexV2(str) {
     arr.forEach((a) => {
         if (!results.includes(a[0])) results.push(a[0]);
     });
-    console.log("- Found the following icons:", results.sort());
+    if (logit("primary", options)) console.log("- Found " + results.length + " icon" + (results.length > 1 ? "s" : ""));
+    if (logit("secondary", options)) console.log(results.sort());
     return results.sort();
 }
 
-function getFilesFromIconList(icons, callback) {
+function getFilesFromIconList(icons, callback, options) {
     // Sort icons by collections: filtered[prefix][array of icons]
     let filtered = {};
     icons.forEach((origNameWithFirstDash) => {
         let origName = origNameWithFirstDash.replace("-", ":");
-        //console.log("origName", origName, origNameWithFirstDash);
 
-        console.log("- Generating SVG for: '" + origName + "'");
+        if (logit("secondary", options)) console.log("- Generating SVG for: '" + origName + "'");
         let icon = origName;
         let parts = origName.split(":"),
             prefix;
@@ -184,7 +192,8 @@ function getFilesFromIconList(icons, callback) {
     Object.keys(filtered).forEach((prefix) => {
         let collection = new Collection();
         if (!collection.loadIconifyCollection(prefix)) {
-            console.error("- Error loading collection", prefix);
+            if (logit("secondary", options)) console.log("- Error loading collection");
+            if (logit("secondary", options)) console.log(prefix);
             return;
         }
         filtered[prefix].map((iconObj) => {
@@ -247,12 +256,12 @@ ${exportText} {
                 ")";
 
             errors += this_error + "\r\n";
-            console.error(this_error);
+            if (logit("secondary", options)) console.log(this_error);
         } else {
             filtered[prefix].map((iconObj) => {
                 let data = collection.getIconData(iconObj.name);
                 if (data) {
-                    console.log("- Generating SVG for: '" + iconObj.origName + "'");
+                    if (logit("secondary", options)) console.log("- Generating SVG for: '" + iconObj.origName + "'");
                     code +=
                         '"' +
                         iconObj.origName +
@@ -265,7 +274,7 @@ ${exportText} {
                 } else {
                     let this_error = "x ERROR no such icon name   '" + iconObj.origName + "'";
                     errors += this_error + "\r\n";
-                    console.error(this_error);
+                    if (logit("secondary", options)) console.log(this_error);
                 }
             });
         }
@@ -292,16 +301,36 @@ ${d.body}
 </svg>`;
 }
 
-async function saveCodeToFile(output, code, iconCount, iconTotal) {
+async function saveCodeToFile(output, code, iconCount, iconTotal, options) {
     let dirname = getDirName(output);
     const made = mkdirp.sync(dirname);
-    if (made) console.log("- mkdirp had to create some of these directories ", made);
+    if (made) {
+        if (logit("secondary", options)) console.log("- mkdirp had to create some of these directories");
+        if (logit("secondary", options)) console.log(made);
+    }
     fs.writeFileSync(output, code, "utf8");
-    console.log(
-        "- Saved " + iconCount + " of " + iconTotal + " icons bundle to",
-        output,
-        " (" + code.length + " bytes)"
-    );
+    if (logit("primary", options))
+        console.log(
+            "- Saved " + iconCount + " of " + iconTotal + " icons bundle to",
+            output,
+            " (" + code.length + " bytes)"
+        );
+}
+
+function logit(level, options) {
+    if (level === "primary") {
+        return (
+            options &&
+            (options.logging === "all" ||
+                options.logging === true ||
+                typeof options.logging === "undefined" ||
+                options.logging === "some")
+        );
+    } else if (level === "secondary") {
+        return (
+            options && (options.logging === "all" || options.logging == true || typeof options.logging === "undefined")
+        );
+    }
 }
 
 module.exports = svelteiconifysvg;
