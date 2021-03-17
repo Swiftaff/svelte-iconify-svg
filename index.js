@@ -135,7 +135,8 @@ function getIconNamesFromTextUsingRegex(str, options) {
     arr.forEach((a) => {
         if ((options && options.duplicates) || !results.includes(a[0])) results.push(a[0]);
     });
-    if (logit("secondary", options)) console.log("- Found the following icon references:", results.sort());
+    if (!(options && options.suppress_log) && logit("secondary", options))
+        console.log("- Found the following icon references:", results.sort());
     return results.sort();
 }
 

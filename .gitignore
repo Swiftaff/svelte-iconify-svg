@@ -4,4 +4,6 @@ test/outputs/*
 !test/outputs/test10
 test/outputs/test10/*
 !test/outputs/test10/icons10b.js
+!test/outputs/test12**
+test/outputs/test12/icons12a.js
 src/*.js
