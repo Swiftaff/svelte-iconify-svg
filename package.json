@@ -7,7 +7,8 @@
     "svelte-iconify-svg": "bin/svelte-iconify-svg.js"
   },
   "scripts": {
-    "test": "ava --timeout=30s",
+    "test": "npm run-script test_ava && npm run-script test_jest",
+    "test_ava": "ava test/main.js --timeout=30s",
     "test_jest": "jest jest_console.test.js",
     "test_verbose": "ava -v --timeout=30s",
     "test_update_snapshots": "ava --update-snapshots --timeout=30s"
