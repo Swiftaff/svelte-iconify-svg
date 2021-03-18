@@ -5,8 +5,8 @@ workflows:
   node-tests:
     jobs:
       - node/test
-          filters:
-            branches:
-              only:
-                - master
-                - "2.2.3"
+        filters:
+          branches:
+            only:
+              - master
+              - 2.2.3
