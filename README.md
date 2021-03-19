@@ -51,6 +51,9 @@ Add to your package.json, and run it as part of your dev or build step
 -   -r --recursive [default = false]<br>
     recursively searches within each input directory, instead of the default which will only search within the first level of input directories
 
+-   -l --logging [default = true]<br>
+    controls the amount of console.logs. Leave it on for to help with debugging, or reduce if it's getting too noisy for your workflow, options are "all"|true, "some", "none"|false
+
 ## Or use the script indirectly, via the rollup plugin
 
 https://github.com/Swiftaff/rollup-plugin-iconify-svg
@@ -78,6 +81,9 @@ const options = {
     commonJs: true,   //default false
     alwaysSave: true, //default false
     recursive: true,  //default false
+    logging: true,    //default true or "all". Other options are:
+                      //"some"
+                      //false or "none"
 };
 const icons = svelteiconifysvg(src, dest, options);
 console.log(icons);
