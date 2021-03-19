@@ -14,6 +14,8 @@ const descriptions = {
         "forces the iconify API network call and re-save of the icons file, instead of the default which will skip these if the icons list has not changed",
     r:
         "recursively searches within each input directory, instead of the default which will only search within the first level of input directories",
+    l:
+        "controls the amount of console.logs. Leave it on to help with debugging, or reduce if it's getting too noisy for your workflow, options are 'all'|true, 'some', 'none'|false",
 };
 
 const helpText = `
@@ -25,6 +27,7 @@ All flags are optional with these defaults...
 -c ${descriptions.c}
 -s ${descriptions.s}
 -r ${descriptions.r}
+-l ${descriptions.l}
     
 2. purpose: Converts iconify icon names to SVG
 Intended for use in svelte projects to avoid dependencies on full font libraries, especially if you only need a few icons.
@@ -81,6 +84,11 @@ const argv = yargs
         description: descriptions.r,
         type: "boolean",
     })
+    .option("logging", {
+        alias: "l",
+        description: descriptions.l,
+        type: "string",
+    })
 
     .help(true, helpText)
     .alias("help", "h").argv;
@@ -94,6 +102,7 @@ let options = {
     commonJs: typeof argv.cjs !== "undefined",
     alwaysSave: typeof argv.alwaysSave !== "undefined",
     recursive: typeof argv.recursive !== "undefined",
+    logging: argv.logging,
 };
 
 svelteiconifysvg(inputDirectoryArray, outputFilePath, options);

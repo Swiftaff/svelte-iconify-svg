@@ -8,6 +8,7 @@ const getDirName = path.dirname;
 const { Collection } = require("@iconify/json-tools");
 
 async function svelteiconifysvg(inputDirectoryArray, outputFilePath, options) {
+    //console.log(options); //for testing cli
     if (logit("primary", options)) console.log("\r\nsvelteiconifysvg v2.2.2");
 
     inputDirectoryArray = Array.isArray(inputDirectoryArray) ? inputDirectoryArray : [inputDirectoryArray];
@@ -88,7 +89,7 @@ function getFilesInDirectory(dirsArr, options) {
             if (logit("secondary", options)) console.error(err);
         }
     });
-    if (logit("primary", options)) console.log("- Found " + ret.length + " file" + (ret.length > 1 ? "s" : ""));
+    if (logit("secondary", options)) console.log("- Found " + ret.length + " file" + (ret.length > 1 ? "s" : ""));
     if (logit("secondary", options)) console.log(ret);
     return ret;
 }
@@ -135,7 +136,8 @@ function getIconNamesFromTextUsingRegex(str, options) {
     arr.forEach((a) => {
         if ((options && options.duplicates) || !results.includes(a[0])) results.push(a[0]);
     });
-    if (logit("secondary", options)) console.log("- Found the following icon references:", results.sort());
+    if (!(options && options.suppress_log) && logit("secondary", options))
+        console.log("- Found the following icon references:", results.sort());
     return results.sort();
 }
 
@@ -156,7 +158,8 @@ function getIconNamesFromTextUsingRegexV2(str, options) {
     arr.forEach((a) => {
         if (!results.includes(a[0])) results.push(a[0]);
     });
-    if (logit("primary", options)) console.log("- Found " + results.length + " icon" + (results.length > 1 ? "s" : ""));
+    if (logit("secondary", options))
+        console.log("- Found " + results.length + " icon" + (results.length > 1 ? "s" : ""));
     if (logit("secondary", options)) console.log(results.sort());
     return results.sort();
 }
@@ -323,12 +326,17 @@ function logit(level, options) {
             options &&
             (options.logging === "all" ||
                 options.logging === true ||
+                options.logging === "true" ||
                 typeof options.logging === "undefined" ||
                 options.logging === "some")
         );
     } else if (level === "secondary") {
         return (
-            options && (options.logging === "all" || options.logging == true || typeof options.logging === "undefined")
+            options &&
+            (options.logging === "all" ||
+                options.logging == true ||
+                options.logging == "true" ||
+                typeof options.logging === "undefined")
         );
     }
 }
