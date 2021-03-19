@@ -15,7 +15,7 @@ const descriptions = {
     r:
         "recursively searches within each input directory, instead of the default which will only search within the first level of input directories",
     l:
-        "controls the amount of console.logs. Leave it on for to help with debugging, or reduce if it's getting too noisy for your workflow, options are 'all'|true, 'some', 'none'|false",
+        "controls the amount of console.logs. Leave it on to help with debugging, or reduce if it's getting too noisy for your workflow, options are 'all'|true, 'some', 'none'|false",
 };
 
 const helpText = `
