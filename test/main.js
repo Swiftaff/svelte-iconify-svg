@@ -309,3 +309,9 @@ test("test 11b cli - recursive file finding with option", async (t) => {
     const test11acli = require("../test/outputs/test11/icons11b_cli.js");
     t.snapshot(test11acli);
 });
+
+test("test 13 fn - check that g transform is included for fa hFLip and vFlip examples", async (t) => {
+    await svelteiconifysvg(["test/fixtures/test13"], "test/outputs/test13/icons.js", { commonJs: true });
+    const test = require("../test/outputs/test13/icons.js");
+    t.snapshot(test);
+});
