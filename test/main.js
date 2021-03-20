@@ -1,7 +1,6 @@
 const test = require("ava");
 const fs = require("fs");
 const path = require("path");
-const withPage = require("./_withPage");
 const svelteiconifysvg = require("../index");
 const spawnSync = require("child_process").spawnSync;
 
@@ -132,6 +131,36 @@ test("test 11b fn - recursive file finding with option", async (t) => {
     });
     const test11 = require("../test/outputs/test11/icons11b.js");
     t.snapshot(test11);
+});
+
+test("test 13a fn - option transform [default=false] - check that g transform is NOT included for fa hFLip and vFlip examples by default", async (t) => {
+    await svelteiconifysvg(["test/fixtures/test13"], "test/outputs/test13/icons13a.js", {
+        commonJs: true,
+        alwaysSave: true,
+    });
+    const test = require("../test/outputs/test13/icons13a.js");
+    t.snapshot(test);
+});
+
+test("test 13b fn - option transform = false - check that g transform is NOT included for fa hFLip and vFlip examples", async (t) => {
+    await svelteiconifysvg(["test/fixtures/test13"], "test/outputs/test13/icons13b.js", {
+        commonJs: true,
+        alwaysSave: true,
+        transform: false,
+    });
+    const test = require("../test/outputs/test13/icons13b.js");
+    t.snapshot(test);
+});
+
+test("test 13c fn - option transform = true - check that g transform IS included for fa hFLip and vFlip examples", async (t) => {
+    await svelteiconifysvg(["test/fixtures/test13"], "test/outputs/test13/icons13c.js", {
+        commonJs: true,
+        alwaysSave: true,
+        transform: true,
+    });
+    const test = require("../test/outputs/test13/icons13c.js");
+    console.log(test);
+    t.snapshot(test);
 });
 
 //
@@ -308,4 +337,109 @@ test("test 11b cli - recursive file finding with option", async (t) => {
 
     const test11acli = require("../test/outputs/test11/icons11b_cli.js");
     t.snapshot(test11acli);
+});
+
+test("test 13a cli - option transform [default=false] - check that g transform is NOT included for fa hFLip and vFlip examples by default", async (t) => {
+    const filepath = "test/outputs/test13/icons13a_cli.js";
+    const result = spawnSync("node", [
+        "bin/svelte-iconify-svg",
+        "-i",
+        "'test/fixtures/test13'",
+        "-o",
+        "'" + filepath + "'",
+        "-cjs",
+        "-s",
+    ]);
+
+    const test = require("../test/outputs/test13/icons13a_cli.js");
+    t.snapshot(test);
+});
+
+test("test 13b cli short - option transform = false - check that g transform is NOT included for fa hFLip and vFlip examples", async (t) => {
+    const filepath = "test/outputs/test13/icons13b_cli_short.js";
+    const result = spawnSync("node", [
+        "bin/svelte-iconify-svg",
+        "-i",
+        "'test/fixtures/test13'",
+        "-o",
+        "'" + filepath + "'",
+        "-cjs",
+        "-s",
+        "-t",
+        "false",
+    ]);
+
+    const test = require("../test/outputs/test13/icons13b_cli_short.js");
+    t.snapshot(test);
+});
+
+test("test 13b cli long - option transform = false - check that g transform is NOT included for fa hFLip and vFlip examples", async (t) => {
+    const filepath = "test/outputs/test13/icons13b_cli_long.js";
+    const result = spawnSync("node", [
+        "bin/svelte-iconify-svg",
+        "-i",
+        "'test/fixtures/test13'",
+        "-o",
+        "'" + filepath + "'",
+        "-cjs",
+        "-s",
+        "--transform",
+        "false",
+    ]);
+
+    const test = require("../test/outputs/test13/icons13b_cli_long.js");
+    t.snapshot(test);
+});
+
+test("test 13c cli short - option transform = true - check that g transform IS included for fa hFLip and vFlip examples", async (t) => {
+    const filepath = "test/outputs/test13/icons13c_cli_short.js";
+    const result = spawnSync("node", [
+        "bin/svelte-iconify-svg",
+        "-i",
+        "'test/fixtures/test13'",
+        "-o",
+        "'" + filepath + "'",
+        "-cjs",
+        "-s",
+        "-t",
+        "true",
+    ]);
+
+    const test = require("../test/outputs/test13/icons13c_cli_short.js");
+    t.snapshot(test);
+});
+
+test("test 13c cli shorter - option transform = true - check that g transform IS included for fa hFLip and vFlip examples", async (t) => {
+    const filepath = "test/outputs/test13/icons13c_cli_shorter.js";
+    const result = spawnSync("node", [
+        "bin/svelte-iconify-svg",
+        "-i",
+        "'test/fixtures/test13'",
+        "-o",
+        "'" + filepath + "'",
+        "-cjs",
+        "-s",
+        "-t",
+    ]);
+
+    const test = require("../test/outputs/test13/icons13c_cli_shorter.js");
+    t.snapshot(test);
+});
+
+test("test 13c cli long - option transform = true - check that g transform IS included for fa hFLip and vFlip examples", async (t) => {
+    const filepath = "test/outputs/test13/icons13c_cli_long.js";
+    const result = spawnSync("node", [
+        "bin/svelte-iconify-svg",
+        "-i",
+        "'test/fixtures/test13'",
+        "-o",
+        "'" + filepath + "'",
+        "-cjs",
+        "-s",
+        "--transform",
+        "true",
+    ]);
+
+    const test = require("../test/outputs/test13/icons13c_cli_long.js");
+    t.snapshot(test);
 });

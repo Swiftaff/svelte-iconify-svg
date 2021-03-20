@@ -9,7 +9,7 @@ const { Collection } = require("@iconify/json-tools");
 
 async function svelteiconifysvg(inputDirectoryArray, outputFilePath, options) {
     //console.log(options); //for testing cli
-    if (logit("primary", options)) console.log("\r\nsvelteiconifysvg v2.2.2");
+    if (logit("primary", options)) console.log("\r\nsvelteiconifysvg v2.3.0");
 
     inputDirectoryArray = Array.isArray(inputDirectoryArray) ? inputDirectoryArray : [inputDirectoryArray];
 
@@ -204,7 +204,7 @@ function getFilesFromIconList(icons, callback, options) {
             let code =
                 `<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">` +
-                getSVGHtmlFromData(data);
+                getSVGHtmlFromData(data, options);
             let filename = iconObj.origName.replace(":", "-") + ".svg";
             callback(code, filename);
         });
@@ -269,7 +269,7 @@ ${exportText} {
                         '"' +
                         iconObj.origName +
                         '": `' +
-                        getSVGHtmlFromData(data) +
+                        getSVGHtmlFromData(data, options) +
                         "`," +
                         `
     `;
@@ -288,7 +288,8 @@ ${exportText} {
     return { code, count };
 }
 
-function getSVGHtmlFromData(d) {
+function getSVGHtmlFromData(d, options) {
+    let body = getBodyAndFlipIfNeeded(d, options);
     return `<svg
 width="100%" 
 xmlns="http://www.w3.org/2000/svg"
@@ -299,9 +300,21 @@ style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg);
 transform: rotate(360deg);"
 preserveAspectRatio="xMidYMid meet"
 viewBox="${d.left} ${d.top} ${d.width} ${d.height}">
-${d.body}
+${body}
 <rect x="${d.left}" y="${d.top}" width="${d.width}" height="${d.height}" fill="rgba(0, 0, 0, 0)" />
 </svg>`;
+}
+
+function getBodyAndFlipIfNeeded(d, options) {
+    let body = d.body;
+    if ((!options || (options && options.transform)) && (d.hFlip || d.vFlip)) {
+        let tw = d.hFlip ? d.width : 0;
+        let th = d.vFlip ? d.height : 0;
+        let sw = d.hFlip ? -1 : 1;
+        let sh = d.vFlip ? -1 : 1;
+        body = `<g transform="translate(${tw} ${th}) scale(${sw} ${sh})">${body}</g>`;
+    }
+    return body;
 }
 
 async function saveCodeToFile(output, code, iconCount, iconTotal, options) {

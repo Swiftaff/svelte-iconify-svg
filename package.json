@@ -1,6 +1,6 @@
 {
   "name": "svelte-iconify-svg",
-  "version": "2.2.3",
+  "version": "2.3.0",
   "description": "A node script to autogenerate svg markup from iconify references in your svelte project",
   "main": "index.js",
   "bin": {
@@ -10,7 +10,7 @@
     "test": "npm run-script test_ava && npm run-script test_jest",
     "test_ava": "ava test/main.js --timeout=30s",
     "test_ava_verbose": "ava -v --timeout=30s",
-    "test_ava_update_snapshots": "ava --update-snapshots --timeout=30s",
+    "test_ava_update_snapshots": "ava test/main.js --update-snapshots --timeout=30s",
     "test_jest": "jest jest_console.test.js"
   },
   "ava": {
@@ -44,8 +44,6 @@
   "devDependencies": {
     "ava": "^3.15.0",
     "del": "^6.0.0",
-    "esm": "^3.2.25",
-    "jest": "^26.6.3",
-    "puppeteer": "^8.0.0"
+    "jest": "^26.6.3"
   }
 }

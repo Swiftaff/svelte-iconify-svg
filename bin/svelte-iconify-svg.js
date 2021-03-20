@@ -11,11 +11,13 @@ const descriptions = {
     c:
         'outputs the JS object as commonJs "module.exports = ", instead of the default ES6 export syntax "export const icons = "',
     s:
-        "forces the iconify API network call and re-save of the icons file, instead of the default which will skip these if the icons list has not changed",
+        "forces the iconify API call and re-save of the icons file, instead of the default which will skip these if the icons list has not changed",
     r:
         "recursively searches within each input directory, instead of the default which will only search within the first level of input directories",
     l:
         "controls the amount of console.logs. Leave it on to help with debugging, or reduce if it's getting too noisy for your workflow, options are 'all'|true, 'some', 'none'|false",
+    t:
+        "fix for when some of your font awesome icons are reversed. Default is false. Set to true to enabled vertical or horizontal flipping for a small subset of fa icons. Introduced in 2.3.0",
 };
 
 const helpText = `
@@ -28,6 +30,7 @@ All flags are optional with these defaults...
 -s ${descriptions.s}
 -r ${descriptions.r}
 -l ${descriptions.l}
+-t ${descriptions.t}
     
 2. purpose: Converts iconify icon names to SVG
 Intended for use in svelte projects to avoid dependencies on full font libraries, especially if you only need a few icons.
@@ -89,6 +92,11 @@ const argv = yargs
         description: descriptions.l,
         type: "string",
     })
+    .option("transform", {
+        alias: "t",
+        description: descriptions.t,
+        type: "boolean",
+    })
 
     .help(true, helpText)
     .alias("help", "h").argv;
@@ -103,6 +111,7 @@ let options = {
     alwaysSave: typeof argv.alwaysSave !== "undefined",
     recursive: typeof argv.recursive !== "undefined",
     logging: argv.logging,
+    transform: argv.transform,
 };
 
 svelteiconifysvg(inputDirectoryArray, outputFilePath, options);
