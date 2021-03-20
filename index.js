@@ -9,7 +9,7 @@ const { Collection } = require("@iconify/json-tools");
 
 async function svelteiconifysvg(inputDirectoryArray, outputFilePath, options) {
     //console.log(options); //for testing cli
-    if (logit("primary", options)) console.log("\r\nsvelteiconifysvg v2.2.2");
+    if (logit("primary", options)) console.log("\r\nsvelteiconifysvg v2.3.0");
 
     inputDirectoryArray = Array.isArray(inputDirectoryArray) ? inputDirectoryArray : [inputDirectoryArray];
 
