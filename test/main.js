@@ -1,7 +1,6 @@
 const test = require("ava");
 const fs = require("fs");
 const path = require("path");
-const withPage = require("./_withPage");
 const svelteiconifysvg = require("../index");
 const spawnSync = require("child_process").spawnSync;
 
