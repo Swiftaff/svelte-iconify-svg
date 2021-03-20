@@ -134,6 +134,36 @@ test("test 11b fn - recursive file finding with option", async (t) => {
     t.snapshot(test11);
 });
 
+test("test 13a fn - option transform [default=false] - check that g transform is NOT included for fa hFLip and vFlip examples by default", async (t) => {
+    await svelteiconifysvg(["test/fixtures/test13"], "test/outputs/test13/icons13a.js", {
+        commonJs: true,
+        alwaysSave: true,
+    });
+    const test = require("../test/outputs/test13/icons13a.js");
+    t.snapshot(test);
+});
+
+test("test 13b fn - option transform = false - check that g transform is NOT included for fa hFLip and vFlip examples", async (t) => {
+    await svelteiconifysvg(["test/fixtures/test13"], "test/outputs/test13/icons13b.js", {
+        commonJs: true,
+        alwaysSave: true,
+        transform: false,
+    });
+    const test = require("../test/outputs/test13/icons13b.js");
+    t.snapshot(test);
+});
+
+test("test 13c fn - option transform = true - check that g transform IS included for fa hFLip and vFlip examples", async (t) => {
+    await svelteiconifysvg(["test/fixtures/test13"], "test/outputs/test13/icons13c.js", {
+        commonJs: true,
+        alwaysSave: true,
+        transform: true,
+    });
+    const test = require("../test/outputs/test13/icons13c.js");
+    console.log(test);
+    t.snapshot(test);
+});
+
 //
 // test CLI not just fn
 //
@@ -308,10 +338,4 @@ test("test 11b cli - recursive file finding with option", async (t) => {
 
     const test11acli = require("../test/outputs/test11/icons11b_cli.js");
     t.snapshot(test11acli);
-});
-
-test("test 13 fn - check that g transform is included for fa hFLip and vFlip examples", async (t) => {
-    await svelteiconifysvg(["test/fixtures/test13"], "test/outputs/test13/icons.js", { commonJs: true });
-    const test = require("../test/outputs/test13/icons.js");
-    t.snapshot(test);
 });
