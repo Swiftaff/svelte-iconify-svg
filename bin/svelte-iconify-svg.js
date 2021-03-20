@@ -17,7 +17,7 @@ const descriptions = {
     l:
         "controls the amount of console.logs. Leave it on to help with debugging, or reduce if it's getting too noisy for your workflow, options are 'all'|true, 'some', 'none'|false",
     t:
-        "fix for when some of your font awesome icons are reversed. Default is false. Set to true to enabled vertical or horizontal flipping for a small subset of fa icons. Introduced in 2.3.0",
+        "fix for when some of your font awesome icons are reversed. Default is false. Set to true to enabled vertical or horizontal flipping for a small subset of fa icons such as fa:chevron-right and fa:arrow-circle-down. Introduced in 2.3.0",
 };
 
 const helpText = `

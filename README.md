@@ -54,6 +54,9 @@ Add to your package.json, and run it as part of your dev or build step
 -   -l --logging [default = true]<br>
     controls the amount of console.logs. Leave it on for to help with debugging, or reduce if it's getting too noisy for your workflow, options are "all"|true, "some", "none"|false
 
+-   -t --transform [default = false]<br>
+    fix for when some of your font awesome icons are reversed. Default is false. Set to true to enabled vertical or horizontal flipping for a small subset of fa icons such as fa:chevron-right and fa:arrow-circle-down.
+
 ## Or use the script indirectly, via the rollup plugin
 
 https://github.com/Swiftaff/rollup-plugin-iconify-svg
@@ -84,6 +87,7 @@ const options = {
     logging: true,    //default true or "all". Other options are:
                       //"some"
                       //false or "none"
+    transform: true   //default false
 };
 const icons = svelteiconifysvg(src, dest, options);
 console.log(icons);
