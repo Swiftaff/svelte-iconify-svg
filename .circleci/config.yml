@@ -1,12 +1,12 @@
 version: 2.1
 orbs:
-  node: circleci/node@3.0.0
+    node: circleci/node@3.0.0
 workflows:
-  node-tests:
-    jobs:
-      - node/test:
-          filters:
-            branches:
-              only:
-                - master
-                - 2.2.3
+    node-tests:
+        jobs:
+            - node/test:
+                  filters:
+                      branches:
+                          only:
+                              - master
+                              - ci
