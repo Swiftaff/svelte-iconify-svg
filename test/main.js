@@ -163,6 +163,63 @@ test("test 13c fn - option transform = true - check that g transform IS included
     t.snapshot(test);
 });
 
+test("test 14a fn - option getCodeFromIconList [default=null] - check that it is just like test 1", async (t) => {
+    await svelteiconifysvg(["test/fixtures/test1"], "test/outputs/test14/icons_a.js", { commonJs: true });
+    const test14a = require("../test/outputs/test14/icons_a.js");
+    t.snapshot(test14a);
+});
+
+test("test 14b fn - option getCodeFromIconList = Function(iconsList, options)=>{ code, count } - check that a valid function works on 4b multiple icons example", async (t) => {
+    const getCodeFromIconList = (iconsList, options) => {
+        let count = 0;
+        code = "module.exports = '";
+        for (icon of iconsList) {
+            console.log("icon", icon);
+            code += icon + ", ";
+            count++;
+        }
+        code += "';";
+        return { code, count };
+    };
+    const expected = "emojione:hear-no-evil-monkey, emojione:see-no-evil-monkey, emojione:speak-no-evil-monkey, ";
+    await svelteiconifysvg(["test/fixtures/test4/test4b"], "test/outputs/test14/icons_b.js", {
+        commonJs: true,
+        getCodeFromIconList,
+    });
+    const test14b = require("../test/outputs/test14/icons_b.js");
+    console.log(test14b);
+    console.log(expected);
+    t.snapshot({ test14b, matches: test14b === expected });
+});
+
+test("test 14c fn - option getCodeFromIconList = AsyncFunction(iconsList, options)=>{ code, count } - check that a valid async function works on 4b multiple icons example", async (t) => {
+    function resolveAfter1Second() {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve("resolved");
+            }, 1000);
+        });
+    }
+    const getCodeFromIconList = async (iconsList, options) => {
+        let count = 0;
+        code = "module.exports = '";
+        for (icon of iconsList) {
+            await resolveAfter1Second();
+            console.log("icon", icon);
+            code += icon + ", ";
+            count++;
+        }
+        code += "';";
+        return { code, count };
+    };
+    const expected = "emojione:hear-no-evil-monkey, emojione:see-no-evil-monkey, emojione:speak-no-evil-monkey, ";
+    await svelteiconifysvg(["test/fixtures/test4/test4b"], "test/outputs/test14/icons_c.js", {
+        commonJs: true,
+        getCodeFromIconList,
+    });
+    const test14c = require("../test/outputs/test14/icons_c.js");
+    t.snapshot({ test14c, matches: test14c === expected });
+});
 //
 // test CLI not just fn
 //
