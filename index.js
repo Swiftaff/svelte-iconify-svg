@@ -29,7 +29,7 @@ async function svelteiconifysvg(inputDirectoryArray, outputFilePath, options) {
             options
         );
     } else {
-        let iconsList = getIconNamesFromTextUsingRegex(text, options);
+        let iconsList = getIconNamesFromTextUsingRegex(text);
         if ((options && !options.alwaysSave) || !options) {
             //alwaysSave = false is default
             let iconListHasChanged = await getWhetherIconListHasChanged(iconsList, outputFilePath, options);
