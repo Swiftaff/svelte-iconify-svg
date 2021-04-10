@@ -34,14 +34,20 @@ async function svelteiconifysvg(inputDirectoryArray, outputFilePath, options) {
             //alwaysSave = false is default
             let iconListHasChanged = await getWhetherIconListHasChanged(iconsList, outputFilePath, options);
             if (iconListHasChanged) {
-                let { code, count } = getCodeFromIconList(iconsList, options);
+                let { code, count } =
+                    options && options.getCodeFromIconList
+                        ? await options.getCodeFromIconList(iconsList, options)
+                        : getCodeFromIconList(iconsList, options);
                 await saveCodeToFile(outputFilePath, code, count, iconsList.length, options);
             } else {
                 if (logit("primary", options))
                     console.log("- Skipped getting & saving icons - current list is already saved");
             }
         } else {
-            let { code, count } = getCodeFromIconList(iconsList, options);
+            let { code, count } =
+                options && options.getCodeFromIconList
+                    ? await options.getCodeFromIconList(iconsList, options)
+                    : getCodeFromIconList(iconsList, options);
             await saveCodeToFile(outputFilePath, code, count, iconsList.length, options);
         }
     }

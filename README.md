@@ -81,13 +81,21 @@ const svelteiconifysvg = require("svelte-iconify-svg");
 const src = "src";
 const dest = "src/icons.js";
 const options = {
-    commonJs: true,   //default false
-    alwaysSave: true, //default false
-    recursive: true,  //default false
-    logging: true,    //default true or "all". Other options are:
-                      //"some"
-                      //false or "none"
-    transform: true   //default false
+    commonJs: true,       //default false
+    alwaysSave: true,     //default false
+    recursive: true,      //default false
+    logging: true,        //default true or "all". Other options are:
+                          //"some"
+                          //false or "none"
+    transform: true       //default false
+    regex:                //default is this /(?<=("|'))(?!(bind|on|svelte))[a-zA-Z0-9-]+:[a-zA-Z0-9-]+(?=("|'))/g
+    getCodeFromIconList:  //default null, allows you to replace the main iconify function
+                          //e.g. provide your own which does something different than the inbuilt use of the iconfiy API - go nuts!
+                          //as long as it returns an object {
+                          //  code: string to use when saving the file
+                          //  count: count of icons saved
+                          //}
+                          //e.g. in the format of fn(iconsList, options)=>{ code, count }
 };
 const icons = svelteiconifysvg(src, dest, options);
 console.log(icons);
