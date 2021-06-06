@@ -35,7 +35,7 @@
   },
   "homepage": "https://github.com/Swiftaff/svelte-iconify-svg#readme",
   "dependencies": {
-    "@iconify/json": "^1.1.317",
+    "@iconify/json": "^1.1.353",
     "@iconify/json-tools": "^1.0.10",
     "fs-readdir-recursive": "^1.1.0",
     "mkdirp": "^1.0.4",
